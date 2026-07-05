@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
@@ -10,6 +10,10 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+// The newest post powers the "Latest" view.
+const latest = posts[0];
+const { Content } = latest ? await render(latest) : { Content: null };
 ---
 
 <!doctype html>
@@ -19,7 +23,41 @@ const posts = (await getCollection('blog')).sort(
 		<style>
 			main {
 				width: 960px;
+				max-width: calc(100% - 2em);
 			}
+			/* View toggle */
+			.view-toggle {
+				display: flex;
+				justify-content: center;
+				margin-bottom: 2rem;
+			}
+			.view-toggle button {
+				font-family: inherit;
+				font-size: 0.9rem;
+				padding: 0.5rem 1.25rem;
+				border: 1px solid rgb(var(--gray-light));
+				background: white;
+				color: rgb(var(--gray));
+				cursor: pointer;
+				transition: 0.2s ease;
+			}
+			.view-toggle button:first-child {
+				border-radius: 8px 0 0 8px;
+				border-right: none;
+			}
+			.view-toggle button:last-child {
+				border-radius: 0 8px 8px 0;
+			}
+			.view-toggle button[aria-pressed='true'] {
+				background: rgb(var(--accent));
+				color: white;
+				border-color: rgb(var(--accent));
+			}
+			/* Hide inactive view */
+			[data-view].is-hidden {
+				display: none;
+			}
+			/* List view */
 			ul {
 				display: flex;
 				flex-wrap: wrap;
@@ -69,6 +107,38 @@ const posts = (await getCollection('blog')).sort(
 			ul a:hover img {
 				box-shadow: var(--box-shadow);
 			}
+			/* Latest view */
+			.latest .hero-image {
+				width: 100%;
+			}
+			.latest .hero-image img {
+				display: block;
+				margin: 0 auto 1em;
+				border-radius: 12px;
+				box-shadow: var(--box-shadow);
+			}
+			.latest .post-title {
+				text-align: center;
+				line-height: 1;
+				margin-bottom: 1em;
+			}
+			.latest .post-title h1 {
+				margin: 0 0 0.5em 0;
+			}
+			.latest .prose {
+				width: 720px;
+				max-width: 100%;
+				margin: auto;
+				color: rgb(var(--gray-dark));
+			}
+			.latest .read-more {
+				text-align: center;
+				margin-top: 2rem;
+			}
+			.empty {
+				text-align: center;
+				color: rgb(var(--gray));
+			}
 			@media (max-width: 720px) {
 				ul {
 					gap: 0.5em;
@@ -89,26 +159,90 @@ const posts = (await getCollection('blog')).sort(
 	<body>
 		<Header />
 		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
+			<div class="view-toggle" role="group" aria-label="Choose how to display posts">
+				<button type="button" data-view-btn="list" aria-pressed="true">List</button>
+				<button type="button" data-view-btn="latest" aria-pressed="false">Latest</button>
+			</div>
+
+			<!-- List view: all posts -->
+			<section data-view="list">
+				{
+					posts.length === 0 ? (
+						<p class="empty">No posts yet.</p>
+					) : (
+						<ul>
+							{posts.map((post) => (
+								<li>
+									<a href={`/blog/${post.id}/`}>
+										{post.data.heroImage && (
+											<Image width={720} height={360} src={post.data.heroImage} alt="" />
+										)}
+										<h4 class="title">{post.data.title}</h4>
+										<p class="date">
+											<FormattedDate date={post.data.pubDate} />
+										</p>
+									</a>
+								</li>
+							))}
+						</ul>
+					)
+				}
+			</section>
+
+			<!-- Latest view: newest post, in full -->
+			<section data-view="latest" class="latest is-hidden">
+				{
+					latest && Content ? (
+						<article>
+							{latest.data.heroImage && (
+								<div class="hero-image">
+									<Image width={1020} height={510} src={latest.data.heroImage} alt="" />
+								</div>
+							)}
+							<div class="post-title">
+								<h1>{latest.data.title}</h1>
+								<div class="date">
+									<FormattedDate date={latest.data.pubDate} />
+								</div>
+							</div>
+							<div class="prose">
+								<Content />
+							</div>
+							<p class="read-more">
+								<a href={`/blog/${latest.id}/`}>Open this post →</a>
+							</p>
+						</article>
+					) : (
+						<p class="empty">No posts yet.</p>
+					)
+				}
 			</section>
 		</main>
 		<Footer />
+
+		<script>
+			const KEY = 'blog-view';
+			const buttons = document.querySelectorAll<HTMLButtonElement>('[data-view-btn]');
+			const views = document.querySelectorAll<HTMLElement>('[data-view]');
+
+			function setView(view: string) {
+				views.forEach((el) => el.classList.toggle('is-hidden', el.dataset.view !== view));
+				buttons.forEach((btn) =>
+					btn.setAttribute('aria-pressed', String(btn.dataset.viewBtn === view)),
+				);
+				try {
+					localStorage.setItem(KEY, view);
+				} catch {}
+			}
+
+			buttons.forEach((btn) => btn.addEventListener('click', () => setView(btn.dataset.viewBtn!)));
+
+			// Restore the remembered view on load (defaults to "list").
+			let saved = 'list';
+			try {
+				saved = localStorage.getItem(KEY) || 'list';
+			} catch {}
+			setView(saved);
+		</script>
 	</body>
 </html>

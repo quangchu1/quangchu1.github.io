@@ -1,0 +1,494 @@
+- generic [active] [ref=f1e1]:
+  - banner [ref=f1e2]:
+    - navigation [ref=f1e3]:
+      - heading "Quang's Blog" [level=2] [ref=f1e4]:
+        - link "Quang's Blog" [ref=f1e5] [cursor=pointer]:
+          - /url: /
+      - generic [ref=f1e6]:
+        - link "Home" [ref=f1e7] [cursor=pointer]:
+          - /url: /
+        - link "Blog" [ref=f1e8] [cursor=pointer]:
+          - /url: /blog
+        - link "About" [ref=f1e9] [cursor=pointer]:
+          - /url: /about
+      - generic [ref=f1e10]:
+        - link "Follow Astro on Mastodon" [ref=f1e11] [cursor=pointer]:
+          - /url: https://m.webtoo.ls/@astro
+          - generic [ref=f1e12]: Follow Astro on Mastodon
+          - img [ref=f1e13]
+        - link "Follow Astro on Twitter" [ref=f1e15] [cursor=pointer]:
+          - /url: https://twitter.com/astrodotbuild
+          - generic [ref=f1e16]: Follow Astro on Twitter
+          - img [ref=f1e17]
+        - link "Go to Astro's GitHub repo" [ref=f1e19] [cursor=pointer]:
+          - /url: https://github.com/withastro/astro
+          - generic [ref=f1e20]: Go to Astro's GitHub repo
+          - img [ref=f1e21]
+  - main [ref=f1e23]:
+    - group "Choose how to display posts" [ref=f1e24]:
+      - button "List" [ref=f1e25] [cursor=pointer]
+      - button "Latest" [pressed] [ref=f1e26] [cursor=pointer]
+    - article [ref=f1e28]:
+      - generic [ref=f1e30]:
+        - heading "Understanding 2>&1 in the Shell — What It Really Does" [level=1] [ref=f1e31]
+        - time [ref=f1e33]: Jul 5, 2026
+      - generic [ref=f1e34]:
+        - paragraph [ref=f1e35]:
+          - emphasis [ref=f1e36]: A practical guide to shell redirection, in English and Vietnamese.
+        - separator [ref=f1e37]
+        - heading "The three standard streams" [level=2] [ref=f1e38]
+        - paragraph [ref=f1e39]:
+          - text: Every program you run has three standard streams. Each has a number, called a
+          - strong [ref=f1e40]: file descriptor (FD)
+          - text: ":"
+        - table [ref=f1e41]:
+          - rowgroup [ref=f1e42]:
+            - row "Stream FD Purpose" [ref=f1e43]:
+              - columnheader "Stream" [ref=f1e44]
+              - columnheader "FD" [ref=f1e45]
+              - columnheader "Purpose" [ref=f1e46]
+          - rowgroup [ref=f1e47]:
+            - row "stdin 0 input" [ref=f1e48]:
+              - cell "stdin" [ref=f1e49]
+              - cell "0" [ref=f1e50]:
+                - code [ref=f1e51]: "0"
+              - cell "input" [ref=f1e52]
+            - row "stdout 1 normal output" [ref=f1e53]:
+              - cell "stdout" [ref=f1e54]
+              - cell "1" [ref=f1e55]:
+                - code [ref=f1e56]: "1"
+              - cell "normal output" [ref=f1e57]
+            - row "stderr 2 error messages" [ref=f1e58]:
+              - cell "stderr" [ref=f1e59]
+              - cell "2" [ref=f1e60]:
+                - code [ref=f1e61]: "2"
+              - cell "error messages" [ref=f1e62]
+        - paragraph [ref=f1e63]:
+          - text: By default, both
+          - code [ref=f1e64]: stdout
+          - text: and
+          - code [ref=f1e65]: stderr
+          - text: go to your
+          - strong [ref=f1e66]: terminal (screen)
+          - text: . That’s why, when you just run a command, you see
+          - emphasis [ref=f1e67]: both
+          - text: normal output and errors.
+        - separator [ref=f1e68]
+        - heading "Breaking down 2>&1" [level=2] [ref=f1e69]:
+          - text: Breaking down
+          - code [ref=f1e70]: 2>&1
+        - paragraph [ref=f1e71]:
+          - code [ref=f1e72]: 2>&1
+          - text: "has three parts:"
+        - code [ref=f1e74]:
+          - generic [ref=f1e75]: 2 > &1
+          - generic [ref=f1e76]: │ │ │
+          - generic [ref=f1e77]: │ │ └── to wherever FD 1 (stdout) is currently pointing
+          - generic [ref=f1e78]: │ └────── redirect
+          - generic [ref=f1e79]: └────────── FD 2 (stderr)
+        - paragraph [ref=f1e80]:
+          - text: "Read it as:"
+          - strong [ref=f1e81]: “Send stderr to the same place stdout is currently going.”
+        - heading "The & is the key" [level=3] [ref=f1e82]:
+          - text: The
+          - code [ref=f1e83]: "&"
+          - text: is the key
+        - paragraph [ref=f1e84]:
+          - text: The
+          - code [ref=f1e85]: "&"
+          - text: means
+          - emphasis [ref=f1e86]:
+            - text: “the destination is a file-descriptor number, not a file named
+            - code [ref=f1e87]: "1"
+            - text: .”
+        - table [ref=f1e88]:
+          - rowgroup [ref=f1e89]:
+            - row "Written Meaning" [ref=f1e90]:
+              - columnheader "Written" [ref=f1e91]
+              - columnheader "Meaning" [ref=f1e92]
+          - rowgroup [ref=f1e93]:
+            - row "2>&1 redirect stderr to where FD 1 (stdout) points ✅" [ref=f1e94]:
+              - cell "2>&1" [ref=f1e95]:
+                - code [ref=f1e96]: 2>&1
+              - cell "redirect stderr to where FD 1 (stdout) points ✅" [ref=f1e97]:
+                - text: redirect stderr to
+                - strong [ref=f1e98]: where FD 1 (stdout) points
+                - text: ✅
+            - row "2>1 redirect stderr into a file literally named 1 ❌" [ref=f1e99]:
+              - cell "2>1" [ref=f1e100]:
+                - code [ref=f1e101]: 2>1
+              - cell "redirect stderr into a file literally named 1 ❌" [ref=f1e102]:
+                - text: redirect stderr into a
+                - strong [ref=f1e103]:
+                  - text: file literally named
+                  - code [ref=f1e104]: "1"
+                - text: ❌
+        - paragraph [ref=f1e105]:
+          - text: A single
+          - code [ref=f1e106]: "&"
+          - text: changes everything — forget it and you create a junk file called
+          - code [ref=f1e107]: "1"
+          - text: .
+        - separator [ref=f1e108]
+        - heading "The most important insight" [level=2] [ref=f1e109]
+        - paragraph [ref=f1e110]:
+          - strong [ref=f1e111]:
+            - code [ref=f1e112]: 2>&1
+            - text: only does something useful when stdout has
+            - emphasis [ref=f1e113]: already
+            - text: been redirected
+          - text: (to a file or through a pipe).
+        - paragraph [ref=f1e114]:
+          - text: If you run a command with no redirection,
+          - code [ref=f1e115]: 2>&1
+          - text: is
+          - strong [ref=f1e116]: redundant
+          - text: — both streams already go to the screen anyway.
+        - code [ref=f1e118]:
+          - generic [ref=f1e119]: "git fetch # both stdout AND stderr already show on screen"
+          - generic [ref=f1e120]: "git fetch 2>&1 # identical — the 2>&1 does nothing"
+        - separator [ref=f1e121]
+        - heading "Why > alone isn’t enough" [level=2] [ref=f1e122]:
+          - text: Why
+          - code [ref=f1e123]: ">"
+          - text: alone isn’t enough
+        - paragraph [ref=f1e124]:
+          - code [ref=f1e125]: ">"
+          - text: is shorthand for
+          - code [ref=f1e126]: 1>
+          - text: — it redirects
+          - strong [ref=f1e127]: only stdout
+          - text: . stderr is left behind on the screen.
+        - code [ref=f1e129]:
+          - generic [ref=f1e130]: "git merge ... > log.txt # stdout → file, stderr → SCREEN (leaks!)"
+          - generic [ref=f1e131]: "git merge ... > log.txt 2>&1 # stdout → file, stderr → file ✅"
+        - paragraph [ref=f1e132]:
+          - text: If you forget
+          - code [ref=f1e133]: 2>&1
+          - text: and the command fails, opening
+          - code [ref=f1e134]: log.txt
+          - text: shows
+          - strong [ref=f1e135]: no error
+          - text: — it went to the screen and was never saved.
+        - separator [ref=f1e136]
+        - heading "Order matters" [level=2] [ref=f1e137]
+        - paragraph [ref=f1e138]:
+          - text: Redirections are read
+          - strong [ref=f1e139]: left to right
+          - text: ", and"
+          - code [ref=f1e140]: "&1"
+          - text: captures wherever stdout points
+          - emphasis [ref=f1e141]: at that moment
+          - text: .
+        - code [ref=f1e143]:
+          - generic [ref=f1e144]: "command > log.txt 2>&1 # ✅ both go to the file"
+          - generic [ref=f1e145]: "# (1) (2) # (2) sees stdout already = file → stderr → file"
+          - generic [ref=f1e146]: "command 2>&1 > log.txt # ⚠️ only stdout goes to file"
+          - generic [ref=f1e147]: "# (1) (2) # (1) sees stdout still = screen → stderr → screen"
+          - generic [ref=f1e148]: "# (2) then moves stdout to file, too late for stderr"
+        - separator [ref=f1e149]
+        - heading "Examples" [level=2] [ref=f1e150]
+        - code [ref=f1e152]:
+          - generic [ref=f1e153]: "# 1. Redundant — no redirect, both already on screen"
+          - generic [ref=f1e154]: git fetch 2>&1
+          - generic [ref=f1e155]: "# 2. Capture EVERYTHING (output + errors) into a log file"
+          - generic [ref=f1e156]: brazil-build release > build.log 2>&1
+          - generic [ref=f1e157]: "# 3. Pipe stderr through a filter too (pipes only carry stdout by default)"
+          - generic [ref=f1e158]: git fetch 2>&1 | tail -20
+          - generic [ref=f1e159]: "# 4. Throw away errors, keep normal output"
+          - generic [ref=f1e160]: command 2>/dev/null
+          - generic [ref=f1e161]: "# 5. Send output and errors to SEPARATE files"
+          - generic [ref=f1e162]: command > out.log 2> err.log
+        - separator [ref=f1e163]
+        - heading "Summary table" [level=2] [ref=f1e164]
+        - table [ref=f1e165]:
+          - rowgroup [ref=f1e166]:
+            - row "Command stdout goes to stderr goes to Is 2>&1 useful?" [ref=f1e167]:
+              - columnheader "Command" [ref=f1e168]
+              - columnheader "stdout goes to" [ref=f1e169]
+              - columnheader "stderr goes to" [ref=f1e170]
+              - columnheader "Is 2>&1 useful?" [ref=f1e171]:
+                - text: Is
+                - code [ref=f1e172]: 2>&1
+                - text: useful?
+          - rowgroup [ref=f1e173]:
+            - row "command screen screen (none)" [ref=f1e174]:
+              - cell "command" [ref=f1e175]:
+                - code [ref=f1e176]: command
+              - cell "screen" [ref=f1e177]
+              - cell "screen" [ref=f1e178]
+              - cell "(none)" [ref=f1e179]
+            - row "command 2>&1 screen screen ❌ redundant" [ref=f1e180]:
+              - cell "command 2>&1" [ref=f1e181]:
+                - code [ref=f1e182]: command 2>&1
+              - cell "screen" [ref=f1e183]
+              - cell "screen" [ref=f1e184]
+              - cell "❌ redundant" [ref=f1e185]
+            - row "command > log.txt file screen (leaks) (none)" [ref=f1e186]:
+              - cell "command > log.txt" [ref=f1e187]:
+                - code [ref=f1e188]: command > log.txt
+              - cell "file" [ref=f1e189]
+              - cell "screen (leaks)" [ref=f1e190]
+              - cell "(none)" [ref=f1e191]
+            - row "command > log.txt 2>&1 file file ✅ yes" [ref=f1e192]:
+              - cell "command > log.txt 2>&1" [ref=f1e193]:
+                - code [ref=f1e194]: command > log.txt 2>&1
+              - cell "file" [ref=f1e195]
+              - cell "file" [ref=f1e196]
+              - cell "✅ yes" [ref=f1e197]
+            - row "command 2>&1 | tail pipe pipe ✅ yes" [ref=f1e198]:
+              - cell "command 2>&1 | tail" [ref=f1e199]:
+                - code [ref=f1e200]: command 2>&1 | tail
+              - cell "pipe" [ref=f1e201]
+              - cell "pipe" [ref=f1e202]
+              - cell "✅ yes" [ref=f1e203]
+        - paragraph [ref=f1e204]:
+          - strong [ref=f1e205]: "Bottom line:"
+          - code [ref=f1e206]: 2>&1
+          - text: means
+          - emphasis [ref=f1e207]: “make stderr follow stdout wherever it goes.”
+          - text: It only matters when stdout has been redirected first (via
+          - code [ref=f1e208]: ">"
+          - text: or
+          - code [ref=f1e209]: "|"
+          - text: ). On a bare command, it’s harmless but pointless.
+        - separator [ref=f1e210]
+        - separator [ref=f1e211]
+        - heading "Hiểu về 2>&1 trong Shell — Nó thực sự làm gì?" [level=1] [ref=f1e212]:
+          - text: Hiểu về
+          - code [ref=f1e213]: 2>&1
+          - text: trong Shell — Nó thực sự làm gì?
+        - paragraph [ref=f1e214]:
+          - emphasis [ref=f1e215]: Hướng dẫn thực tế về chuyển hướng luồng trong shell.
+        - separator [ref=f1e216]
+        - heading "Ba luồng chuẩn" [level=2] [ref=f1e217]
+        - paragraph [ref=f1e218]:
+          - text: Mỗi chương trình bạn chạy đều có ba luồng chuẩn. Mỗi luồng có một con số gọi là
+          - strong [ref=f1e219]: file descriptor (FD)
+          - text: ":"
+        - table [ref=f1e220]:
+          - rowgroup [ref=f1e221]:
+            - row "Luồng FD Công dụng" [ref=f1e222]:
+              - columnheader "Luồng" [ref=f1e223]
+              - columnheader "FD" [ref=f1e224]
+              - columnheader "Công dụng" [ref=f1e225]
+          - rowgroup [ref=f1e226]:
+            - row "stdin 0 dữ liệu vào" [ref=f1e227]:
+              - cell "stdin" [ref=f1e228]
+              - cell "0" [ref=f1e229]:
+                - code [ref=f1e230]: "0"
+              - cell "dữ liệu vào" [ref=f1e231]
+            - row "stdout 1 kết quả bình thường" [ref=f1e232]:
+              - cell "stdout" [ref=f1e233]
+              - cell "1" [ref=f1e234]:
+                - code [ref=f1e235]: "1"
+              - cell "kết quả bình thường" [ref=f1e236]
+            - row "stderr 2 thông báo lỗi" [ref=f1e237]:
+              - cell "stderr" [ref=f1e238]
+              - cell "2" [ref=f1e239]:
+                - code [ref=f1e240]: "2"
+              - cell "thông báo lỗi" [ref=f1e241]
+        - paragraph [ref=f1e242]:
+          - text: Theo mặc định, cả
+          - code [ref=f1e243]: stdout
+          - text: và
+          - code [ref=f1e244]: stderr
+          - text: đều đi ra
+          - strong [ref=f1e245]: màn hình (terminal)
+          - text: . Đó là lý do khi bạn chạy một lệnh, bạn thấy
+          - emphasis [ref=f1e246]: cả
+          - text: kết quả bình thường lẫn lỗi.
+        - separator [ref=f1e247]
+        - heading "Phân tích 2>&1" [level=2] [ref=f1e248]:
+          - text: Phân tích
+          - code [ref=f1e249]: 2>&1
+        - paragraph [ref=f1e250]:
+          - code [ref=f1e251]: 2>&1
+          - text: "gồm ba phần:"
+        - code [ref=f1e253]:
+          - generic [ref=f1e254]: 2 > &1
+          - generic [ref=f1e255]: │ │ │
+          - generic [ref=f1e256]: │ │ └── tới nơi mà FD 1 (stdout) đang trỏ tới
+          - generic [ref=f1e257]: │ └────── chuyển hướng
+          - generic [ref=f1e258]: └────────── FD 2 (stderr)
+        - paragraph [ref=f1e259]:
+          - text: "Đọc là:"
+          - strong [ref=f1e260]: “Gửi stderr tới cùng nơi mà stdout đang đi tới.”
+        - heading "Dấu & là mấu chốt" [level=3] [ref=f1e261]:
+          - text: Dấu
+          - code [ref=f1e262]: "&"
+          - text: là mấu chốt
+        - paragraph [ref=f1e263]:
+          - text: Dấu
+          - code [ref=f1e264]: "&"
+          - text: có nghĩa
+          - emphasis [ref=f1e265]:
+            - text: “đích đến là một số file descriptor, không phải một file tên là
+            - code [ref=f1e266]: "1"
+            - text: .”
+        - table [ref=f1e267]:
+          - rowgroup [ref=f1e268]:
+            - row "Viết Ý nghĩa" [ref=f1e269]:
+              - columnheader "Viết" [ref=f1e270]
+              - columnheader "Ý nghĩa" [ref=f1e271]
+          - rowgroup [ref=f1e272]:
+            - row "2>&1 chuyển stderr tới nơi FD 1 (stdout) đang trỏ ✅" [ref=f1e273]:
+              - cell "2>&1" [ref=f1e274]:
+                - code [ref=f1e275]: 2>&1
+              - cell "chuyển stderr tới nơi FD 1 (stdout) đang trỏ ✅" [ref=f1e276]:
+                - text: chuyển stderr tới
+                - strong [ref=f1e277]: nơi FD 1 (stdout) đang trỏ
+                - text: ✅
+            - row "2>1 chuyển stderr vào một file có tên thật là 1 ❌" [ref=f1e278]:
+              - cell "2>1" [ref=f1e279]:
+                - code [ref=f1e280]: 2>1
+              - cell "chuyển stderr vào một file có tên thật là 1 ❌" [ref=f1e281]:
+                - text: chuyển stderr vào một
+                - strong [ref=f1e282]:
+                  - text: file có tên thật là
+                  - code [ref=f1e283]: "1"
+                - text: ❌
+        - paragraph [ref=f1e284]:
+          - text: Chỉ một dấu
+          - code [ref=f1e285]: "&"
+          - text: thay đổi tất cả — quên nó là bạn tạo ra một file rác tên
+          - code [ref=f1e286]: "1"
+          - text: .
+        - separator [ref=f1e287]
+        - heading "Điểm quan trọng nhất" [level=2] [ref=f1e288]
+        - paragraph [ref=f1e289]:
+          - strong [ref=f1e290]:
+            - code [ref=f1e291]: 2>&1
+            - text: chỉ có tác dụng khi stdout đã được chuyển hướng từ trước
+          - text: (vào file hoặc qua pipe).
+        - paragraph [ref=f1e292]:
+          - text: Nếu bạn chạy một lệnh mà không chuyển hướng gì, thì
+          - code [ref=f1e293]: 2>&1
+          - text: là
+          - strong [ref=f1e294]: thừa
+          - text: — cả hai luồng vốn đã ra màn hình rồi.
+        - code [ref=f1e296]:
+          - generic [ref=f1e297]: "git fetch # cả stdout VÀ stderr đều đã hiện ra màn hình"
+          - generic [ref=f1e298]: "git fetch 2>&1 # y hệt — 2>&1 chẳng làm gì cả"
+        - separator [ref=f1e299]
+        - heading "Vì sao chỉ > là chưa đủ" [level=2] [ref=f1e300]:
+          - text: Vì sao chỉ
+          - code [ref=f1e301]: ">"
+          - text: là chưa đủ
+        - paragraph [ref=f1e302]:
+          - code [ref=f1e303]: ">"
+          - text: là cách viết tắt của
+          - code [ref=f1e304]: 1>
+          - text: — nó chỉ chuyển hướng
+          - strong [ref=f1e305]: stdout
+          - text: . stderr bị bỏ lại trên màn hình.
+        - code [ref=f1e307]:
+          - generic [ref=f1e308]: "git merge ... > log.txt # stdout → file, stderr → MÀN HÌNH (lọt!)"
+          - generic [ref=f1e309]: "git merge ... > log.txt 2>&1 # stdout → file, stderr → file ✅"
+        - paragraph [ref=f1e310]:
+          - text: Nếu bạn quên
+          - code [ref=f1e311]: 2>&1
+          - text: và lệnh thất bại, mở
+          - code [ref=f1e312]: log.txt
+          - text: ra sẽ
+          - strong [ref=f1e313]: không thấy lỗi đâu
+          - text: — nó đã ra màn hình và không hề được lưu lại.
+        - separator [ref=f1e314]
+        - heading "Thứ tự rất quan trọng" [level=2] [ref=f1e315]
+        - paragraph [ref=f1e316]:
+          - text: Lệnh chuyển hướng được đọc
+          - strong [ref=f1e317]: từ trái sang phải
+          - text: ", và"
+          - code [ref=f1e318]: "&1"
+          - text: bắt lấy nơi stdout đang trỏ
+          - emphasis [ref=f1e319]: tại thời điểm đó
+          - text: .
+        - code [ref=f1e321]:
+          - generic [ref=f1e322]: "command > log.txt 2>&1 # ✅ cả hai vào file"
+          - generic [ref=f1e323]: "# (1) (2) # (2) thấy stdout đã là file → stderr → file"
+          - generic [ref=f1e324]: "command 2>&1 > log.txt # ⚠️ chỉ stdout vào file"
+          - generic [ref=f1e325]: "# (1) (2) # (1) thấy stdout vẫn là màn hình → stderr → màn hình"
+          - generic [ref=f1e326]: "# (2) sau đó mới đổi stdout sang file, quá muộn cho stderr"
+        - separator [ref=f1e327]
+        - heading "Ví dụ" [level=2] [ref=f1e328]
+        - code [ref=f1e330]:
+          - generic [ref=f1e331]: "# 1. Thừa — không chuyển hướng, cả hai vốn đã ra màn hình"
+          - generic [ref=f1e332]: git fetch 2>&1
+          - generic [ref=f1e333]: "# 2. Gom TẤT CẢ (kết quả + lỗi) vào một file log"
+          - generic [ref=f1e334]: brazil-build release > build.log 2>&1
+          - generic [ref=f1e335]: "# 3. Cho stderr đi qua bộ lọc luôn (pipe mặc định chỉ mang stdout)"
+          - generic [ref=f1e336]: git fetch 2>&1 | tail -20
+          - generic [ref=f1e337]: "# 4. Vứt bỏ lỗi, chỉ giữ kết quả bình thường"
+          - generic [ref=f1e338]: command 2>/dev/null
+          - generic [ref=f1e339]: "# 5. Gửi kết quả và lỗi vào HAI file RIÊNG"
+          - generic [ref=f1e340]: command > out.log 2> err.log
+        - separator [ref=f1e341]
+        - heading "Bảng tóm tắt" [level=2] [ref=f1e342]
+        - table [ref=f1e343]:
+          - rowgroup [ref=f1e344]:
+            - row "Lệnh stdout đi đâu stderr đi đâu 2>&1 có tác dụng?" [ref=f1e345]:
+              - columnheader "Lệnh" [ref=f1e346]
+              - columnheader "stdout đi đâu" [ref=f1e347]
+              - columnheader "stderr đi đâu" [ref=f1e348]
+              - columnheader "2>&1 có tác dụng?" [ref=f1e349]:
+                - code [ref=f1e350]: 2>&1
+                - text: có tác dụng?
+          - rowgroup [ref=f1e351]:
+            - row "command màn hình màn hình (không có)" [ref=f1e352]:
+              - cell "command" [ref=f1e353]:
+                - code [ref=f1e354]: command
+              - cell "màn hình" [ref=f1e355]
+              - cell "màn hình" [ref=f1e356]
+              - cell "(không có)" [ref=f1e357]
+            - row "command 2>&1 màn hình màn hình ❌ thừa" [ref=f1e358]:
+              - cell "command 2>&1" [ref=f1e359]:
+                - code [ref=f1e360]: command 2>&1
+              - cell "màn hình" [ref=f1e361]
+              - cell "màn hình" [ref=f1e362]
+              - cell "❌ thừa" [ref=f1e363]
+            - row "command > log.txt file màn hình (lọt) (không có)" [ref=f1e364]:
+              - cell "command > log.txt" [ref=f1e365]:
+                - code [ref=f1e366]: command > log.txt
+              - cell "file" [ref=f1e367]
+              - cell "màn hình (lọt)" [ref=f1e368]
+              - cell "(không có)" [ref=f1e369]
+            - row "command > log.txt 2>&1 file file ✅ có" [ref=f1e370]:
+              - cell "command > log.txt 2>&1" [ref=f1e371]:
+                - code [ref=f1e372]: command > log.txt 2>&1
+              - cell "file" [ref=f1e373]
+              - cell "file" [ref=f1e374]
+              - cell "✅ có" [ref=f1e375]
+            - row "command 2>&1 | tail pipe pipe ✅ có" [ref=f1e376]:
+              - cell "command 2>&1 | tail" [ref=f1e377]:
+                - code [ref=f1e378]: command 2>&1 | tail
+              - cell "pipe" [ref=f1e379]
+              - cell "pipe" [ref=f1e380]
+              - cell "✅ có" [ref=f1e381]
+        - paragraph [ref=f1e382]:
+          - strong [ref=f1e383]: "Kết luận:"
+          - code [ref=f1e384]: 2>&1
+          - text: nghĩa là
+          - emphasis [ref=f1e385]: “cho stderr đi theo stdout tới bất cứ đâu.”
+          - text: Nó chỉ có ý nghĩa khi stdout đã được chuyển hướng trước (bằng
+          - code [ref=f1e386]: ">"
+          - text: hoặc
+          - code [ref=f1e387]: "|"
+          - text: ). Với một lệnh trơn, nó vô hại nhưng cũng vô nghĩa.
+      - paragraph [ref=f1e388]:
+        - link "Open this post →" [ref=f1e389] [cursor=pointer]:
+          - /url: /blog/understanding-2-and-1/
+  - contentinfo [ref=f1e390]:
+    - text: © 2026 Your name here. All rights reserved.
+    - generic [ref=f1e391]:
+      - link "Follow Astro on Mastodon" [ref=f1e392] [cursor=pointer]:
+        - /url: https://m.webtoo.ls/@astro
+        - generic [ref=f1e393]: Follow Astro on Mastodon
+        - img [ref=f1e394]
+      - link "Follow Astro on Twitter" [ref=f1e396] [cursor=pointer]:
+        - /url: https://twitter.com/astrodotbuild
+        - generic [ref=f1e397]: Follow Astro on Twitter
+        - img [ref=f1e398]
+      - link "Go to Astro's GitHub repo" [ref=f1e400] [cursor=pointer]:
+        - /url: https://github.com/withastro/astro
+        - generic [ref=f1e401]: Go to Astro's GitHub repo
+        - img [ref=f1e402]

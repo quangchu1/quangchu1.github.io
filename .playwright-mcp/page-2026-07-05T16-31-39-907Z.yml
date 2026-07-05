@@ -1,0 +1,82 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - heading "Quang's Blog" [level=2] [ref=e4]:
+        - link "Quang's Blog" [ref=e5] [cursor=pointer]:
+          - /url: /
+      - generic [ref=e6]:
+        - link "Home" [ref=e7] [cursor=pointer]:
+          - /url: /
+        - link "Blog" [ref=e8] [cursor=pointer]:
+          - /url: /blog
+        - link "About" [ref=e9] [cursor=pointer]:
+          - /url: /about
+      - generic [ref=e10]:
+        - link "Follow Astro on Mastodon" [ref=e11] [cursor=pointer]:
+          - /url: https://m.webtoo.ls/@astro
+          - generic [ref=e12]: Follow Astro on Mastodon
+          - img [ref=e13]
+        - link "Follow Astro on Twitter" [ref=e15] [cursor=pointer]:
+          - /url: https://twitter.com/astrodotbuild
+          - generic [ref=e16]: Follow Astro on Twitter
+          - img [ref=e17]
+        - link "Go to Astro's GitHub repo" [ref=e19] [cursor=pointer]:
+          - /url: https://github.com/withastro/astro
+          - generic [ref=e20]: Go to Astro's GitHub repo
+          - img [ref=e21]
+  - main [ref=e23]:
+    - group "Choose how to display posts" [ref=e24]:
+      - button "List" [pressed] [ref=e25] [cursor=pointer]
+      - button "Latest" [ref=e26] [cursor=pointer]
+    - list [ref=e28]:
+      - listitem [ref=e29]:
+        - link "Understanding 2>&1 in the Shell — What It Really Does Jul 5, 2026" [ref=e30] [cursor=pointer]:
+          - /url: /blog/understanding-2-and-1/
+          - heading "Understanding 2>&1 in the Shell — What It Really Does" [level=4] [ref=e31]
+          - paragraph [ref=e32]:
+            - time [ref=e33]: Jul 5, 2026
+      - listitem [ref=e34]:
+        - link "Markdown Style Guide Jun 19, 2024" [ref=e35] [cursor=pointer]:
+          - /url: /blog/markdown-style-guide/
+          - heading "Markdown Style Guide" [level=4] [ref=e36]
+          - paragraph [ref=e37]:
+            - time [ref=e38]: Jun 19, 2024
+      - listitem [ref=e39]:
+        - link "Using MDX Jun 1, 2024" [ref=e40] [cursor=pointer]:
+          - /url: /blog/using-mdx/
+          - heading "Using MDX" [level=4] [ref=e41]
+          - paragraph [ref=e42]:
+            - time [ref=e43]: Jun 1, 2024
+      - listitem [ref=e44]:
+        - link "Third post Jul 22, 2022" [ref=e45] [cursor=pointer]:
+          - /url: /blog/third-post/
+          - heading "Third post" [level=4] [ref=e46]
+          - paragraph [ref=e47]:
+            - time [ref=e48]: Jul 22, 2022
+      - listitem [ref=e49]:
+        - link "Second post Jul 15, 2022" [ref=e50] [cursor=pointer]:
+          - /url: /blog/second-post/
+          - heading "Second post" [level=4] [ref=e51]
+          - paragraph [ref=e52]:
+            - time [ref=e53]: Jul 15, 2022
+      - listitem [ref=e54]:
+        - link "First post Jul 8, 2022" [ref=e55] [cursor=pointer]:
+          - /url: /blog/first-post/
+          - heading "First post" [level=4] [ref=e56]
+          - paragraph [ref=e57]:
+            - time [ref=e58]: Jul 8, 2022
+  - contentinfo [ref=e59]:
+    - text: © 2026 Your name here. All rights reserved.
+    - generic [ref=e60]:
+      - link "Follow Astro on Mastodon" [ref=e61] [cursor=pointer]:
+        - /url: https://m.webtoo.ls/@astro
+        - generic [ref=e62]: Follow Astro on Mastodon
+        - img [ref=e63]
+      - link "Follow Astro on Twitter" [ref=e65] [cursor=pointer]:
+        - /url: https://twitter.com/astrodotbuild
+        - generic [ref=e66]: Follow Astro on Twitter
+        - img [ref=e67]
+      - link "Go to Astro's GitHub repo" [ref=e69] [cursor=pointer]:
+        - /url: https://github.com/withastro/astro
+        - generic [ref=e70]: Go to Astro's GitHub repo
+        - img [ref=e71]
