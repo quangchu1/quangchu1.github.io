@@ -9,6 +9,7 @@ Daily bilingual practice from the IELTS tutor sessions on Jul 11 2026.
 ## 11:31 — hai mẹ con nó đi đâu rồi ấy nhỉ
 
 **Vietnamese:** hai mẹ con nó đi đâu rồi ấy nhỉ, sao giờ vẫn chưa thấy gọi điện gì cả, hzhzhz?
+
 **English:** Where on earth have those two — the mother and her kid — gone off to? Why still no call from them, hmm?
 
 - **where** /weə(r)/ — *(adverb — trạng từ)* — ở đâu

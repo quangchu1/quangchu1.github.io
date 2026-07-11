@@ -18,3 +18,140 @@ const { Content } = await render(post);
 <BlogPost {...post.data}>
 	<Content />
 </BlogPost>
+
+<style>
+	.tts-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25em;
+		margin-left: 0.5em;
+		padding: 0.05em 0.5em;
+		font-size: 0.8em;
+		line-height: 1.6;
+		vertical-align: middle;
+		border: 1px solid rgb(var(--gray-light));
+		border-radius: 999px;
+		background: rgba(var(--gray-light), 0.4);
+		color: rgb(var(--gray-dark));
+		cursor: pointer;
+		user-select: none;
+		transition: background 0.15s ease;
+	}
+	.tts-btn:hover { background: rgba(var(--accent), 0.15); }
+	.tts-btn.speaking { background: rgba(var(--accent), 0.25); }
+	.tts-toolbar {
+		margin: 0.5em 0 1.5em;
+		display: flex;
+		gap: 0.5em;
+		flex-wrap: wrap;
+		align-items: center;
+	}
+	.tts-toolbar .note { font-size: 0.8em; color: rgb(var(--gray)); }
+</style>
+
+<script>
+	// Client-side US-English text-to-speech for the English learning posts.
+	// Adds a "🔊 US" button to every line that starts with "English:" and a
+	// "Play all" toolbar. Uses the browser's built-in en-US voice (Web Speech
+	// API) so no audio files need to be stored or shipped.
+	(() => {
+		const synth = window.speechSynthesis;
+		if (!synth) return; // browser has no TTS support
+
+		let usVoice: SpeechSynthesisVoice | null = null;
+		function pickVoice() {
+			const voices = synth.getVoices();
+			if (!voices.length) return;
+			usVoice =
+				voices.find((v) => v.lang === 'en-US' && /US|United States|Samantha|Alex|Aaron|Nicky|Ava/i.test(v.name)) ||
+				voices.find((v) => v.lang === 'en-US') ||
+				voices.find((v) => v.lang && v.lang.startsWith('en')) ||
+				null;
+		}
+		pickVoice();
+		if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = pickVoice;
+
+		function speak(text: string, btn?: HTMLElement) {
+			synth.cancel();
+			const u = new SpeechSynthesisUtterance(text);
+			u.lang = 'en-US';
+			if (usVoice) u.voice = usVoice;
+			u.rate = 0.95;
+			if (btn) {
+				btn.classList.add('speaking');
+				u.onend = u.onerror = () => btn.classList.remove('speaking');
+			}
+			synth.speak(u);
+		}
+
+		// Find the English lines. Each "English:" label is a <strong> element; the
+		// spoken text is whatever follows it within the same paragraph (up to the
+		// next <strong> or the paragraph end). This works whether the Vietnamese
+		// and English labels are separate paragraphs or share one paragraph.
+		const prose = document.querySelector('.prose');
+		if (!prose) return;
+		const englishTexts: string[] = [];
+
+		function textAfterLabel(strong: Element): string {
+			let t = '';
+			let n = strong.nextSibling;
+			while (n && !(n.nodeType === 1 && (n as Element).tagName === 'STRONG')) {
+				t += n.textContent || '';
+				n = n.nextSibling;
+			}
+			return t.trim();
+		}
+
+		prose.querySelectorAll('strong').forEach((strong) => {
+			if (!/^English:/i.test((strong.textContent || '').trim())) return;
+			const full = textAfterLabel(strong);
+			if (!full) return;
+			englishTexts.push(full);
+
+			const btn = document.createElement('button');
+			btn.type = 'button';
+			btn.className = 'tts-btn';
+			btn.setAttribute('aria-label', 'Play US English pronunciation');
+			btn.textContent = '🔊 US';
+			btn.addEventListener('click', () => speak(full, btn));
+			(strong.parentElement || strong).appendChild(btn);
+		});
+
+		// "Play all" toolbar at the top of the post body
+		if (englishTexts.length) {
+			const toolbar = document.createElement('div');
+			toolbar.className = 'tts-toolbar';
+
+			const playAll = document.createElement('button');
+			playAll.type = 'button';
+			playAll.className = 'tts-btn';
+			playAll.textContent = '▶️ Play all (US)';
+
+			const stop = document.createElement('button');
+			stop.type = 'button';
+			stop.className = 'tts-btn';
+			stop.textContent = '⏹ Stop';
+			stop.addEventListener('click', () => synth.cancel());
+
+			const note = document.createElement('span');
+			note.className = 'note';
+			note.textContent = 'Audio uses your browser\u2019s built-in US English voice.';
+
+			playAll.addEventListener('click', () => {
+				synth.cancel();
+				englishTexts.forEach((t, i) => {
+					const u = new SpeechSynthesisUtterance(t);
+					u.lang = 'en-US';
+					if (usVoice) u.voice = usVoice;
+					u.rate = 0.95;
+					synth.speak(u);
+				});
+			});
+
+			toolbar.append(playAll, stop, note);
+			const title = prose.querySelector('.title');
+			if (title && title.nextSibling) prose.insertBefore(toolbar, title.nextSibling);
+			else prose.insertBefore(toolbar, prose.firstChild);
+		}
+	})();
+</script>
