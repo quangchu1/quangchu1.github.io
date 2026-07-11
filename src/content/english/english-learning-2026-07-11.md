@@ -2,6 +2,7 @@
 title: 'English Learning Log — Jul 11 2026'
 description: 'Vietnamese-English translations and IELTS vocabulary notes from Jul 11 2026.'
 pubDate: 'Jul 11 2026'
+updatedDate: 'Jul 11 2026'
 ---
 
 Daily bilingual practice from the IELTS tutor sessions on Jul 11 2026.
@@ -23,5 +24,18 @@ Daily bilingual practice from the IELTS tutor sessions on Jul 11 2026.
 - **hmm** /hm/ — *(interjection — thán từ)* — ừm/hừm (ngập ngừng)
 
 > 💡 "on earth" nhấn mạnh sự sốt ruột; "wander off" nhẹ nhàng hơn "go off"; hzhzhz → "hmm/sigh".
+
+---
+
+## 19:10 — Translate "One caveat"
+
+**Vietnamese:** Một điều cần lưu ý (một cảnh báo/điều kiện nhỏ đi kèm).
+
+**English:** One caveat.
+
+- **one** /wʌn/ — *(determiner/number — từ hạn định/số từ)* — một
+- **caveat** /ˈkæv.i.æt/ — *(noun — danh từ)* — lời cảnh báo, điều/điều kiện cần lưu ý; điểm dè chừng đi kèm một tuyên bố
+
+> 💡 "caveat" trang trọng/học thuật (gốc Latin = "hãy dè chừng"). Collocation: "with one caveat", "a caveat to this is…". Đồng nghĩa nâng band: proviso /prəˈvaɪ.zəʊ/, qualification, cautionary note.
 
 ---
