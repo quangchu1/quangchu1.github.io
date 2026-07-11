@@ -48,14 +48,16 @@ const { Content } = await render(post);
 </style>
 
 <script>
-	// US-English "Listen" for blog articles. Reads the post's prose in a US voice
-	// (Web Speech API — no audio files), skipping code so fenced/inline code is
-	// never read aloud.
+	// Bilingual "Listen" for blog articles. Reads the post's prose aloud (Web
+	// Speech API — no audio files), auto-detecting each paragraph's language:
+	// English is read with a US voice, Vietnamese with a Vietnamese voice. Code
+	// (fenced blocks and inline code) is never read.
 	(() => {
 		const synth = window.speechSynthesis;
 		if (!synth) return;
 
 		let usVoice: SpeechSynthesisVoice | null = null;
+		let viVoice: SpeechSynthesisVoice | null = null;
 		function pickVoice() {
 			const voices = synth.getVoices();
 			if (!voices.length) return;
@@ -64,9 +66,25 @@ const { Content } = await render(post);
 				voices.find((v) => v.lang === 'en-US') ||
 				voices.find((v) => v.lang && v.lang.startsWith('en')) ||
 				null;
+			viVoice =
+				voices.find((v) => v.lang === 'vi-VN') ||
+				voices.find((v) => v.lang && v.lang.toLowerCase().startsWith('vi')) ||
+				null;
 		}
 		pickVoice();
 		if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = pickVoice;
+
+		// Vietnamese-specific letters (đ, ă, â, ê, ô, ơ, ư and any toned vowel).
+		// English text never contains these, so their presence => Vietnamese.
+		const VI_RE = /[đĐăĂâÂêÊôÔơƠưƯàáảãạằắẳẵặầấẩẫậèéẻẽẹềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/i;
+		function isVietnamese(text: string): boolean {
+			return VI_RE.test(text);
+		}
+		function voiceFor(text: string) {
+			return isVietnamese(text)
+				? { lang: 'vi-VN', voice: viVoice }
+				: { lang: 'en-US', voice: usVoice };
+		}
 
 		const prose = document.querySelector('.prose');
 		if (!prose) return;
@@ -99,14 +117,15 @@ const { Content } = await render(post);
 			btn.textContent = '🔊 Playing…';
 			chunks.forEach((t, i) => {
 				const u = new SpeechSynthesisUtterance(t);
-				u.lang = 'en-US';
-				if (usVoice) u.voice = usVoice;
+				const { lang, voice } = voiceFor(t);
+				u.lang = lang;
+				if (voice) u.voice = voice;
 				u.rate = 0.98;
 				if (i === chunks.length - 1) {
 					u.onend = u.onerror = () => {
 						playing = false;
 						btn.classList.remove('speaking');
-						btn.textContent = '🔊 Listen (US)';
+						btn.textContent = '🔊 Listen';
 					};
 				}
 				synth.speak(u);
@@ -119,8 +138,8 @@ const { Content } = await render(post);
 		const listen = document.createElement('button');
 		listen.type = 'button';
 		listen.className = 'tts-btn';
-		listen.textContent = '🔊 Listen (US)';
-		listen.setAttribute('aria-label', 'Listen to this article in US English');
+		listen.textContent = '🔊 Listen';
+		listen.setAttribute('aria-label', 'Listen to this article (English and Vietnamese)');
 
 		const stop = document.createElement('button');
 		stop.type = 'button';
@@ -132,7 +151,7 @@ const { Content } = await render(post);
 				synth.cancel();
 				playing = false;
 				listen.classList.remove('speaking');
-				listen.textContent = '🔊 Listen (US)';
+				listen.textContent = '🔊 Listen';
 			} else {
 				speakAll(listen);
 			}
@@ -141,12 +160,12 @@ const { Content } = await render(post);
 			synth.cancel();
 			playing = false;
 			listen.classList.remove('speaking');
-			listen.textContent = '🔊 Listen (US)';
+			listen.textContent = '🔊 Listen';
 		});
 
 		const note = document.createElement('span');
 		note.className = 'note';
-		note.textContent = 'Reads the article in a US voice; code blocks are skipped.';
+		note.textContent = 'Reads the article aloud (English in a US voice, Vietnamese in a Vietnamese voice); code blocks are skipped.';
 
 		toolbar.append(listen, stop, note);
 		const title = prose.querySelector('.title');
