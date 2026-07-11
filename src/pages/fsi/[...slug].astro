@@ -18,3 +18,158 @@ const { Content } = await render(post);
 <BlogPost {...post.data}>
 	<Content />
 </BlogPost>
+
+<style>
+	.tts-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25em;
+		padding: 0.15em 0.7em;
+		font-size: 0.85em;
+		line-height: 1.6;
+		border: 1px solid rgb(var(--gray-light));
+		border-radius: 999px;
+		background: rgba(var(--gray-light), 0.4);
+		color: rgb(var(--gray-dark));
+		cursor: pointer;
+		user-select: none;
+		transition: background 0.15s ease;
+	}
+	.tts-btn:hover { background: rgba(var(--accent), 0.15); }
+	.tts-btn.speaking { background: rgba(var(--accent), 0.25); }
+	.tts-toolbar {
+		margin: 0 0 1.5em;
+		display: flex;
+		gap: 0.5em;
+		flex-wrap: wrap;
+		align-items: center;
+	}
+	.tts-toolbar .note { font-size: 0.8em; color: rgb(var(--gray)); }
+</style>
+
+<script>
+	// Bilingual "Listen" for FSI articles. Reads the post's prose aloud (Web
+	// Speech API — no audio files), auto-detecting each paragraph's language:
+	// English is read with a US voice, Vietnamese with a Vietnamese voice. Code
+	// (fenced blocks and inline code) is never read.
+	(() => {
+		const synth = window.speechSynthesis;
+		if (!synth) return;
+
+		let usVoice: SpeechSynthesisVoice | null = null;
+		let viVoice: SpeechSynthesisVoice | null = null;
+		function pickVoice() {
+			const voices = synth.getVoices();
+			if (!voices.length) return;
+			usVoice =
+				voices.find((v) => v.lang === 'en-US' && /US|United States|Samantha|Alex|Aaron|Nicky|Ava/i.test(v.name)) ||
+				voices.find((v) => v.lang === 'en-US') ||
+				voices.find((v) => v.lang && v.lang.startsWith('en')) ||
+				null;
+			viVoice =
+				voices.find((v) => v.lang === 'vi-VN') ||
+				voices.find((v) => v.lang && v.lang.toLowerCase().startsWith('vi')) ||
+				null;
+		}
+		pickVoice();
+		if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = pickVoice;
+
+		// Vietnamese-specific letters (đ, ă, â, ê, ô, ơ, ư and any toned vowel).
+		// English text never contains these, so their presence => Vietnamese.
+		const VI_RE = /[đĐăĂâÂêÊôÔơƠưƯàáảãạằắẳẵặầấẩẫậèéẻẽẹềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/i;
+		function isVietnamese(text: string): boolean {
+			return VI_RE.test(text);
+		}
+		function voiceFor(text: string) {
+			return isVietnamese(text)
+				? { lang: 'vi-VN', voice: viVoice }
+				: { lang: 'en-US', voice: usVoice };
+		}
+
+		const prose = document.querySelector('.prose');
+		if (!prose) return;
+
+		// Collect readable blocks, excluding the title header and any code.
+		const blocks = Array.from(
+			prose.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, blockquote'),
+		).filter((el) => !el.closest('pre') && !el.closest('.title') && !el.closest('blockquote > *'));
+
+		const chunks: string[] = [];
+		const seen = new Set<Element>();
+		blocks.forEach((el) => {
+			// avoid double-reading nested blocks (e.g. <p> inside <blockquote>)
+			if (Array.from(seen).some((s) => s.contains(el))) return;
+			const clone = el.cloneNode(true) as HTMLElement;
+			clone.querySelectorAll('code, pre').forEach((c) => c.remove()); // drop code
+			const t = (clone.textContent || '').replace(/\s+/g, ' ').trim();
+			if (t) {
+				chunks.push(t);
+				seen.add(el);
+			}
+		});
+		if (!chunks.length) return;
+
+		let playing = false;
+		function speakAll(btn: HTMLElement) {
+			synth.cancel();
+			playing = true;
+			btn.classList.add('speaking');
+			btn.textContent = '🔊 Playing…';
+			chunks.forEach((t, i) => {
+				const u = new SpeechSynthesisUtterance(t);
+				const { lang, voice } = voiceFor(t);
+				u.lang = lang;
+				if (voice) u.voice = voice;
+				u.rate = 0.98;
+				if (i === chunks.length - 1) {
+					u.onend = u.onerror = () => {
+						playing = false;
+						btn.classList.remove('speaking');
+						btn.textContent = '🔊 Listen';
+					};
+				}
+				synth.speak(u);
+			});
+		}
+
+		const toolbar = document.createElement('div');
+		toolbar.className = 'tts-toolbar';
+
+		const listen = document.createElement('button');
+		listen.type = 'button';
+		listen.className = 'tts-btn';
+		listen.textContent = '🔊 Listen';
+		listen.setAttribute('aria-label', 'Listen to this article (English and Vietnamese)');
+
+		const stop = document.createElement('button');
+		stop.type = 'button';
+		stop.className = 'tts-btn';
+		stop.textContent = '⏹ Stop';
+
+		listen.addEventListener('click', () => {
+			if (playing) {
+				synth.cancel();
+				playing = false;
+				listen.classList.remove('speaking');
+				listen.textContent = '🔊 Listen';
+			} else {
+				speakAll(listen);
+			}
+		});
+		stop.addEventListener('click', () => {
+			synth.cancel();
+			playing = false;
+			listen.classList.remove('speaking');
+			listen.textContent = '🔊 Listen';
+		});
+
+		const note = document.createElement('span');
+		note.className = 'note';
+		note.textContent = 'Reads the article aloud (English in a US voice, Vietnamese in a Vietnamese voice); code blocks are skipped.';
+
+		toolbar.append(listen, stop, note);
+		const title = prose.querySelector('.title');
+		if (title && title.nextSibling) prose.insertBefore(toolbar, title.nextSibling);
+		else prose.insertBefore(toolbar, prose.firstChild);
+	})();
+</script>
