@@ -1,11 +1,10 @@
 ---
 title: 'English Learning Log — Jul 11 2026'
-description: 'Vietnamese-English translations and IELTS vocabulary notes from Jul 11 2026.'
+description: 'Vietnamese–English translations and IELTS vocabulary notes from Jul 11 2026.'
 pubDate: 'Jul 11 2026'
-updatedDate: 'Jul 11 2026'
 ---
 
-Daily bilingual practice from the IELTS tutor sessions on Jul 11 2026.
+Daily Vietnamese–English translations and IELTS vocabulary notes from the tutor sessions on Jul 11 2026.
 
 ## 11:31 — hai mẹ con nó đi đâu rồi ấy nhỉ
 
