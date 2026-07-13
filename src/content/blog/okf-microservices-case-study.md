@@ -2,6 +2,7 @@
 title: 'From Microservices Repo to Knowledge Bundle: Applying OKF to Online Boutique'
 description: 'A real case study: applying the Open Knowledge Format (OKF) to the Online Boutique microservices demo, with the exact generator commands. Bilingual: English + Tiếng Việt.'
 pubDate: 'Jul 11 2026'
+updatedDate: 'Jul 13 2026'
 heroImage: '../../assets/blog-placeholder-2.jpg'
 ---
 
@@ -156,6 +157,83 @@ OKF didn't ask us to adopt a platform or learn a query language — it asked us 
 
 ---
 
+## FAQ
+
+### General OKF questions
+
+**What is the difference between a Concept and a Bundle?**
+
+A **Knowledge Bundle** is the unit of distribution: a directory tree of UTF-8 Markdown files with YAML frontmatter. A **Concept** is one document inside it — every non-reserved `.md` file in the bundle is a Concept. In the Online Boutique case study above, `knowledge/okf/` is the bundle and `services/cartservice.md` is one of its 20 Concepts.
+
+**What is actually *required* for a valid Concept?**
+
+Only one thing: a parseable YAML frontmatter block with a non-empty `type`. Everything else — `title`, `description`, `resource`, `tags`, `timestamp` — is optional, and producers may freely add their own extension keys (the case study adds `source_path`, `source_fingerprint`, `language`). Missing optional fields, unknown types or keys, and broken links are non-fatal by design.
+
+**Do I need special tooling, a server, or network access to use OKF?**
+
+No. OKF requires no schema registry, no central authority, no required tooling, and no network. If you can `cat` a file you can read a Concept; if you can `git clone` a repo you can ship a bundle. Tools like the okf-bundle generator (python3 + pyyaml, no network) are conveniences for *producing* bundles, not requirements for *consuming* them.
+
+**How is an OKF bundle version-controlled and reviewed?**
+
+The bundle is just files in the repo, so git handles it natively: pull requests, diffs, blame, and code review all work unchanged. Knowledge edits go through the same review process as source code. There is no proprietary metadata store, no export step, and nothing to migrate away from — which is also how OKF avoids vendor lock-in: your knowledge is plain Markdown in a directory you already own.
+
+**What are `index.md` and `log.md`?**
+
+They are OKF's two reserved files. Each directory's `index.md` lists that directory's Concepts and subdirectories with one-line descriptions, giving readers (and agents) progressive disclosure — navigate one level at a time instead of ingesting everything. Only the *root* `index.md` may carry frontmatter, and only the key `okf_version` (e.g. `"0.1"`). `log.md` is a dated, newest-first change history for the bundle.
+
+**Is conformance actually checked?**
+
+Yes — OKF v0.1 §9 defines conformance, and the generator's `validate.py` enforces it: parseable frontmatter on every Concept, a non-empty `type`, and well-formed reserved files. Everything else is permissive: unknown types/keys, broken links, and missing indexes produce at most warnings, never hard failures. A `--strict` flag additionally enforces the reference writer profile (`type`/`title`/`description`/`timestamp`).
+
+### Browsing OKF as a wiki website
+
+**Can I browse an OKF bundle like a wiki?**
+
+Yes — and this is a direct consequence of the format, not a feature bolted on. A bundle is plain Markdown plus a per-directory `index.md` (generated recursively by `reindex`, one in *every* directory). That means **any** Markdown renderer or static-site generator can present it as a browsable wiki: MkDocs, Docusaurus, Backstage TechDocs, GitHub's or GitLab's built-in Markdown rendering, or the OKF reference *knowledge-catalog* viewer. The mapping is mechanical: the `index.md` files become the wiki's navigation, and each Concept becomes a wiki page. Because Concepts also cross-link with ordinary Markdown links, the result reads as a graph, not just a tree.
+
+One thing to be clear about: **OKF itself does not ship or mandate a website or server.** Presentation is a separate, pluggable layer that you choose. The cheapest option is doing nothing — pushing `knowledge/okf/` to GitHub already gives you a clickable, rendered wiki via GitHub's own Markdown view.
+
+### Enterprise scale: multiple GitHub orgs
+
+**We have several GitHub orgs — say `abc-infra`, `abc-dev`, `abc-data` — each with many interrelated repos. Does OKF have built-in support for a company-wide wiki across all of them?**
+
+Honest answer: **no.** OKF v0.1 has no built-in cross-repo or cross-org federation primitive — no bundle registry, no org/tenant concept, no automatic cross-repo linking, no "join" operation in the spec. A bundle lives in one directory, typically one repo.
+
+What OKF *does* give you is a minimal model (directories + `index.md` + Markdown links + `resource` URIs) that composes at scale by **convention**. The practical pattern:
+
+1. **Per-repo bundles.** Each repo in each org carries its own `knowledge/okf/` bundle, versioned and reviewed with that repo's code — exactly as in the case study.
+2. **An aggregator ("super-bundle") catalog repo.** Create one separate repo that nests all the per-repo bundles — via git submodules or a scheduled sync — with a top-level folder per org:
+
+   ```
+   abc-knowledge-catalog/
+   ├── index.md                  # generated: links to the three orgs
+   ├── log.md
+   ├── abc-infra/
+   │   ├── index.md              # generated: links to this org's repos
+   │   ├── network-gateway/      # ← that repo's knowledge/okf bundle
+   │   └── k8s-platform/
+   ├── abc-dev/
+   │   ├── index.md
+   │   ├── storefront/
+   │   └── billing-api/
+   └── abc-data/
+       ├── index.md
+       └── warehouse-pipelines/
+   ```
+
+3. **Run `reindex` at the aggregate root.** Because `reindex` walks recursively and writes an `index.md` in every directory, it generates the whole org → repo → concept navigation tree automatically:
+
+   ```bash
+   python3 tools/okf-bundle/scripts/reindex.py --bundle .
+   ```
+
+4. **Express cross-org relationships with ordinary Markdown links** between Concepts, and/or with shared `resource` URIs. `resource` is a free-form URI — the generator defaults it to `repo://<source_path>`, but a full git URL or `https://` URL works, which is exactly the hook for pointing Concepts at their real source across repos. There is no enforcement; broken cross-links are non-fatal by design.
+5. **Point one static-site/wiki generator** (MkDocs, Docusaurus, Backstage TechDocs, or the knowledge-catalog viewer) at the aggregate root. The per-directory `index.md` files give it the org/repo/concept navigation for free.
+
+So the organization of the company-wide wiki is something **you design** — via directory structure, indexes, and links — not something OKF provides as a feature. That is consistent with OKF's deliberate minimalism: the same rules that govern one repo's bundle scale to many repos and many orgs without any new format machinery.
+
+---
+
 ## Tiếng Việt
 
 > **🇻🇳 Tiếng Việt** · [🇬🇧 English](#what) (bản tiếng Anh ở trên)
@@ -302,3 +380,80 @@ OKF không yêu cầu chúng tôi phải áp dụng một nền tảng hay học
 - Repo case-study (công việc này): https://github.com/quangchu1/okf-microservices-demo
 - Demo upstream (công khai): https://github.com/GoogleCloudPlatform/microservices-demo
 - OKF / Knowledge Catalog (công khai): https://github.com/GoogleCloudPlatform/knowledge-catalog
+
+---
+
+## Câu hỏi thường gặp (FAQ)
+
+### Câu hỏi chung về OKF
+
+**Concept và Bundle khác nhau như thế nào?**
+
+**Knowledge Bundle** là đơn vị phân phối: một cây thư mục gồm các tệp Markdown UTF-8 có YAML frontmatter. **Concept** là một tài liệu bên trong bundle — mỗi tệp `.md` không thuộc nhóm reserved đều là một Concept. Trong case study Online Boutique ở trên, `knowledge/okf/` là bundle và `services/cartservice.md` là một trong 20 Concept của nó.
+
+**Một Concept hợp lệ thực sự *bắt buộc* những gì?**
+
+Chỉ một thứ: một khối YAML frontmatter phân tích được, với trường `type` không rỗng. Mọi thứ còn lại — `title`, `description`, `resource`, `tags`, `timestamp` — đều tùy chọn, và producer được tự do thêm các khóa mở rộng riêng (case study thêm `source_path`, `source_fingerprint`, `language`). Thiếu trường tùy chọn, type hay khóa lạ, link hỏng — tất cả đều không gây lỗi nghiêm trọng, theo đúng thiết kế.
+
+**Tôi có cần công cụ đặc biệt, server hay kết nối mạng để dùng OKF không?**
+
+Không. OKF không yêu cầu schema registry, không có cơ quan trung tâm, không bắt buộc công cụ nào, và không cần mạng. Nếu bạn có thể `cat` một tệp thì bạn đọc được Concept; nếu bạn có thể `git clone` một repo thì bạn phân phối được bundle. Các công cụ như generator okf-bundle (chỉ cần python3 + pyyaml, không cần mạng) là tiện ích để *tạo* bundle, không phải điều kiện để *đọc* bundle.
+
+**Bundle OKF được quản lý phiên bản và review như thế nào?**
+
+Bundle chỉ là các tệp trong repo, nên git xử lý nó một cách tự nhiên: pull request, diff, blame và code review đều hoạt động như bình thường. Việc sửa tri thức đi qua đúng quy trình review như mã nguồn. Không có kho metadata độc quyền, không có bước export, không có gì phải "di cư" khỏi — đó cũng chính là cách OKF tránh vendor lock-in: tri thức của bạn là Markdown thuần trong một thư mục mà bạn vốn đã sở hữu.
+
+**`index.md` và `log.md` là gì?**
+
+Đó là hai tệp reserved (dành riêng) của OKF. `index.md` của mỗi thư mục liệt kê các Concept và thư mục con của thư mục đó kèm mô tả một dòng, tạo ra cơ chế progressive disclosure (tiết lộ dần) — người đọc, hoặc agent, điều hướng từng cấp một thay vì phải nạp tất cả. Chỉ `index.md` ở *gốc* bundle mới được mang frontmatter, và chỉ với khóa `okf_version` (ví dụ `"0.1"`). `log.md` là lịch sử thay đổi của bundle, ghi theo ngày, mục mới nhất ở trên cùng.
+
+**Tính chuẩn (conformance) có thực sự được kiểm tra không?**
+
+Có — OKF v0.1 §9 định nghĩa conformance, và `validate.py` của generator thực thi nó: frontmatter phân tích được trên mọi Concept, `type` không rỗng, và các tệp reserved đúng định dạng. Phần còn lại là permissive: type/khóa lạ, link hỏng và index thiếu chỉ tạo ra warning, không bao giờ là hard failure. Cờ `--strict` bổ sung thêm writer profile tham chiếu (`type`/`title`/`description`/`timestamp`).
+
+### Duyệt OKF như một website wiki
+
+**Tôi có thể duyệt một OKF bundle như một wiki không?**
+
+Có — và đó là hệ quả trực tiếp của định dạng, không phải một tính năng gắn thêm. Một bundle là Markdown thuần cộng với `index.md` trong từng thư mục (được `reindex` sinh ra một cách đệ quy, thư mục nào cũng có). Nghĩa là **bất kỳ** trình render Markdown hay static-site generator (công cụ sinh website tĩnh) nào cũng có thể trình bày nó thành một wiki duyệt được: MkDocs, Docusaurus, Backstage TechDocs, trình render Markdown sẵn có của GitHub/GitLab, hoặc trình xem tham chiếu *knowledge-catalog* của OKF. Cách ánh xạ hoàn toàn cơ học: các tệp `index.md` trở thành thanh điều hướng của wiki, còn mỗi Concept trở thành một trang wiki. Vì các Concept còn liên kết chéo bằng link Markdown thông thường, kết quả đọc như một đồ thị chứ không chỉ là một cái cây.
+
+Một điểm cần nói rõ: **bản thân OKF không kèm theo và không bắt buộc bất kỳ website hay server nào.** Lớp trình bày là một tầng tách rời, có thể cắm-thay tùy chọn. Phương án rẻ nhất là không làm gì cả — chỉ cần push `knowledge/okf/` lên GitHub, bạn đã có một wiki render sẵn, click được, nhờ chính chế độ hiển thị Markdown của GitHub.
+
+### Quy mô doanh nghiệp: nhiều GitHub org
+
+**Chúng tôi có nhiều GitHub org — ví dụ `abc-infra`, `abc-dev`, `abc-data` — mỗi org có nhiều repo liên quan đến nhau. OKF có hỗ trợ tích hợp sẵn cho một wiki toàn công ty trải trên tất cả các org đó không?**
+
+Câu trả lời thẳng thắn: **không.** OKF v0.1 không có primitive tích hợp sẵn nào cho việc liên kết (federation) giữa nhiều repo hay nhiều org — không có registry cho bundle, không có khái niệm org/tenant, không có cơ chế tự động liên kết chéo giữa các repo, không có phép "join" nào trong spec. Một bundle sống trong một thư mục, thường là một repo.
+
+Thứ OKF *thực sự* cung cấp là một mô hình tối giản (thư mục + `index.md` + link Markdown + URI `resource`) có thể ghép lại ở quy mô lớn bằng **quy ước**. Mẫu thực hành cụ thể:
+
+1. **Bundle theo từng repo.** Mỗi repo trong mỗi org mang bundle `knowledge/okf/` riêng của nó, được quản lý phiên bản và review cùng với mã nguồn của repo đó — đúng như trong case study.
+2. **Một repo catalog đóng vai trò aggregator ("super-bundle").** Tạo một repo riêng lồng tất cả các bundle của từng repo vào — qua git submodule (cơ chế nhúng repo con vào repo cha) hoặc một job đồng bộ định kỳ — với mỗi org là một thư mục cấp cao nhất:
+
+   ```
+   abc-knowledge-catalog/
+   ├── index.md                  # sinh tự động: liên kết tới ba org
+   ├── log.md
+   ├── abc-infra/
+   │   ├── index.md              # sinh tự động: liên kết tới các repo của org này
+   │   ├── network-gateway/      # ← bundle knowledge/okf của repo đó
+   │   └── k8s-platform/
+   ├── abc-dev/
+   │   ├── index.md
+   │   ├── storefront/
+   │   └── billing-api/
+   └── abc-data/
+       ├── index.md
+       └── warehouse-pipelines/
+   ```
+
+3. **Chạy `reindex` tại gốc của aggregate.** Vì `reindex` duyệt đệ quy và ghi một `index.md` vào mọi thư mục, nó tự động sinh ra toàn bộ cây điều hướng org → repo → concept:
+
+   ```bash
+   python3 tools/okf-bundle/scripts/reindex.py --bundle .
+   ```
+
+4. **Diễn đạt quan hệ xuyên org bằng link Markdown thông thường** giữa các Concept, và/hoặc bằng các URI `resource` dùng chung. `resource` là một URI tự do — generator mặc định đặt nó là `repo://<source_path>`, nhưng một URL git đầy đủ hay `https://` đều hợp lệ; đây chính là điểm móc để trỏ Concept về nguồn thật của nó xuyên qua các repo. Không có cơ chế cưỡng chế nào; link chéo bị hỏng là non-fatal theo thiết kế.
+5. **Trỏ một static-site/wiki generator** (MkDocs, Docusaurus, Backstage TechDocs, hoặc trình xem knowledge-catalog) vào gốc của aggregate. Các tệp `index.md` theo từng thư mục cung cấp sẵn cho nó cấu trúc điều hướng org/repo/concept.
+
+Tóm lại, cách tổ chức wiki toàn công ty là thứ **bạn tự thiết kế** — qua cấu trúc thư mục, index và link — chứ không phải một tính năng OKF cung cấp sẵn. Điều này nhất quán với triết lý tối giản có chủ đích của OKF: cùng một bộ quy tắc áp dụng cho bundle của một repo cũng mở rộng được sang nhiều repo và nhiều org, mà không cần thêm bất kỳ cơ chế định dạng mới nào.
