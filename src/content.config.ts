@@ -34,4 +34,11 @@ const fsi = defineCollection({
 	schema: postSchema,
 });
 
-export const collections = { blog, english, fsi };
+const debate = defineCollection({
+	// Load Markdown and MDX files in the `src/content/debate/` directory.
+	loader: glob({ base: './src/content/debate', pattern: '**/*.{md,mdx}' }),
+	// Reuse the same frontmatter schema as the blog.
+	schema: postSchema,
+});
+
+export const collections = { blog, english, fsi, debate };
