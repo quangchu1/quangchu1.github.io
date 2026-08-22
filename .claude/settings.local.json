@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git -c user.name=\"quangchu1\" commit -q -m \"Pin GitHub Actions to Node 22 for Astro 7\")",
+      "Bash(git push *)",
+      "Bash(gh run *)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_close",
+      "Bash(pkill -f \"astro preview\")",
+      "Bash(pkill -f \"node.*preview\")",
+      "Bash(git -C /Users/quangchu/working/opensource/gitblog add -A)",
+      "Bash(git -C /Users/quangchu/working/opensource/gitblog commit -q -m \"Add List/Latest view toggle to blog index\")",
+      "Bash(git -C /Users/quangchu/working/opensource/gitblog push origin main)"
+    ]
+  }
+}

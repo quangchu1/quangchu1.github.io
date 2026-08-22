@@ -4,7 +4,7 @@ description: 'Vietnamese–English translations and IELTS vocabulary notes from 
 pubDate: 'Jul 11 2026'
 ---
 
-Daily Vietnamese–English translations and IELTS vocabulary notes from the tutor sessions on Jul 11 2026.
+Daily Vietnamese–English translations with IELTS-level word analysis.
 
 ## 11:31 — hai mẹ con nó đi đâu rồi ấy nhỉ
 
@@ -23,18 +23,5 @@ Daily Vietnamese–English translations and IELTS vocabulary notes from the tuto
 - **hmm** /hm/ — *(interjection — thán từ)* — ừm/hừm (ngập ngừng)
 
 > 💡 "on earth" nhấn mạnh sự sốt ruột; "wander off" nhẹ nhàng hơn "go off"; hzhzhz → "hmm/sigh".
-
----
-
-## 19:10 — Translate "One caveat"
-
-**Vietnamese:** Một điều cần lưu ý (một cảnh báo/điều kiện nhỏ đi kèm).
-
-**English:** One caveat.
-
-- **one** /wʌn/ — *(determiner/number — từ hạn định/số từ)* — một
-- **caveat** /ˈkæv.i.æt/ — *(noun — danh từ)* — lời cảnh báo, điều/điều kiện cần lưu ý; điểm dè chừng đi kèm một tuyên bố
-
-> 💡 "caveat" trang trọng/học thuật (gốc Latin = "hãy dè chừng"). Collocation: "with one caveat", "a caveat to this is…". Đồng nghĩa nâng band: proviso /prəˈvaɪ.zəʊ/, qualification, cautionary note.
 
 ---
