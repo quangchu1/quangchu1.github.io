@@ -1,8 +1,11 @@
 ---
-title: 'English Learning Log — Aug 22 2026'
-description: 'Vietnamese–English translations and IELTS vocabulary notes from Aug 22 2026.'
+title: "The Untapped Prize: Asia's High-Net-Worth Insurance Market"
+description: 'McKinsey on the HNWI insurance opportunity in Asia — with a bilingual (EN/VI) IELTS vocabulary breakdown of the article.'
 pubDate: 'Aug 22 2026'
-updatedDate: 'Aug 22 2026'
+---
+
+> Source: McKinsey & Company, ["The untapped prize: Asia's high-net-worth insurance market"](https://www.mckinsey.com/industries/financial-services/our-insights/the-untapped-prize-asias-high-net-worth-insurance-market) (Aug 12 2026). Below is a section-by-section English→Vietnamese reading with IELTS-level word analysis.
+
 ---
 
 Daily Vietnamese–English translations with IELTS-level word analysis.
