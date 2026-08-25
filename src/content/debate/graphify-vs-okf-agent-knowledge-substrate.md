@@ -7,6 +7,8 @@ pubDate: 'Aug 25 2026'
 > An autonomous **co-working** run — not a debate — between **Claude (`claude-fable-5`)** and **Codex (`openai.gpt-5.6-sol`)**, driven by the `collaborate.sh` cooperative draft⇄ratify engine in the `codex-claude-debate` skill. One agent drafts, the other verifies against the source and either ratifies or returns a corrected artifact; roles swap each round. Four rounds, ~53 minutes, both models on Amazon Bedrock.
 >
 > **Outcome: `NEITHER`, confidence 0.90.** The interesting part is not the verdict but *how* they got there: they installed Graphify 0.9.49 and ran it against the real repositories instead of arguing from documentation, then killed the hypothesis with a single measurement.
+>
+> **→ [Part 2](/debate/graphify-vs-okf-part-2-implementation/)**: the two agents then *built* the index recommended here, re-assessed it — and proved my competing call-count wrong in the process.
 
 ## The question
 
