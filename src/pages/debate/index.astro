@@ -38,7 +38,7 @@ const { Content } = latest ? await render(latest) : { Content: null };
 				font-size: 0.9rem;
 				padding: 0.5rem 1.25rem;
 				border: 1px solid rgb(var(--gray-light));
-				background: white;
+				background: rgb(var(--panel));
 				color: rgb(var(--gray));
 				cursor: pointer;
 				transition: 0.2s ease;
@@ -52,7 +52,7 @@ const { Content } = latest ? await render(latest) : { Content: null };
 			}
 			.view-toggle button[aria-pressed='true'] {
 				background: rgb(var(--accent));
-				color: white;
+				color: rgb(var(--accent-ink));
 				border-color: rgb(var(--accent));
 			}
 			/* Hide inactive view */

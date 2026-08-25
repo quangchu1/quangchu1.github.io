@@ -1,0 +1,100 @@
+---
+// Cycles the colour theme: system -> light -> dark -> system.
+//
+// "system" is kept in the cycle rather than offering a plain two-way switch,
+// so a reader who has set a device preference is not forced to restate it and
+// is not stuck if their device later changes.
+//
+// The label is a word rather than a sun/moon glyph on purpose: an icon toggle
+// has to answer "does this show the current state or the thing it will do",
+// and readers guess wrong either way.
+---
+
+<button id="themeToggle" type="button" class="theme-toggle" data-mode="system">
+	<span class="mode" aria-hidden="true">Auto</span>
+</button>
+
+<style>
+	.theme-toggle {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 4.2em;
+		padding: 0.35em 0.7em;
+		border: 1px solid rgb(var(--gray-light));
+		border-radius: 999px;
+		background: rgb(var(--panel));
+		color: rgb(var(--gray));
+		font: inherit;
+		font-size: 0.75em;
+		line-height: 1;
+		cursor: pointer;
+	}
+	.theme-toggle:hover {
+		color: rgb(var(--gray-dark));
+		border-color: rgb(var(--gray));
+	}
+	/* Keyboard focus must stay visible: this control sits on the header
+	   surface, where a default outline can be low contrast in one theme. */
+	.theme-toggle:focus-visible {
+		outline: 2px solid rgb(var(--accent));
+		outline-offset: 2px;
+	}
+</style>
+
+<script is:inline>
+	(function () {
+		/* Shared with the pre-paint resolver in BaseHead — change both together. */
+		var KEY = 'gitblog.theme';
+		var MODES = ['system', 'light', 'dark'];
+		var LABEL = { system: 'Auto', light: 'Light', dark: 'Dark' };
+		var btn = document.getElementById('themeToggle');
+		var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+		var mode = 'system';
+
+		function apply(next, persist) {
+			mode = MODES.indexOf(next) === -1 ? 'system' : next;
+			var dark = mode === 'dark' || (mode === 'system' && !!(mq && mq.matches));
+			document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+
+			btn.dataset.mode = mode;
+			btn.querySelector('.mode').textContent = LABEL[mode];
+			var shown = mode === 'system' ? 'auto, currently ' + (dark ? 'dark' : 'light') : mode;
+			var upcoming = MODES[(MODES.indexOf(mode) + 1) % MODES.length];
+			/* A cycling control has to name where the next press lands, or its
+			   accessible name only describes state and the press is a guess. */
+			btn.setAttribute('aria-label', 'Colour theme: ' + shown + '. Activate for ' + LABEL[upcoming].toLowerCase() + '.');
+			btn.setAttribute('title', 'Colour theme: ' + shown);
+
+			if (persist) {
+				try {
+					localStorage.setItem(KEY, mode);
+				} catch (e) {
+					/* private mode — the choice just will not survive a reload */
+				}
+			}
+		}
+
+		btn.addEventListener('click', function () {
+			apply(MODES[(MODES.indexOf(mode) + 1) % MODES.length], true);
+		});
+
+		/* On "system", follow the device live so the page flips mid-visit rather
+		   than only on reload. An explicit light/dark choice ignores this. */
+		if (mq) {
+			var onChange = function () {
+				if (mode === 'system') apply('system', false);
+			};
+			if (mq.addEventListener) mq.addEventListener('change', onChange);
+			else if (mq.addListener) mq.addListener(onChange);
+		}
+
+		var stored = 'system';
+		try {
+			stored = localStorage.getItem(KEY) || 'system';
+		} catch (e) {
+			/* private mode */
+		}
+		apply(stored, false);
+	})();
+</script>

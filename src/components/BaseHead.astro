@@ -32,6 +32,30 @@ const { title, description, image = FallbackImage } = Astro.props;
 />
 <meta name="generator" content={Astro.generator} />
 
+<!--
+	Resolve the stored colour theme BEFORE first paint, so a dark-mode reader
+	never gets a white flash. is:inline keeps it unbundled and blocking, which
+	is the whole point — a deferred module would run after the first paint and
+	the flash would be back. Kept as a miniature of ThemeToggle's script; the
+	storage key is shared and must stay in step.
+-->
+<script is:inline>
+	(function () {
+		var pref = 'system';
+		try {
+			pref = localStorage.getItem('gitblog.theme') || 'system';
+		} catch (e) {
+			/* private mode */
+		}
+		var dark =
+			pref === 'dark' ||
+			(pref === 'system' &&
+				window.matchMedia &&
+				window.matchMedia('(prefers-color-scheme: dark)').matches);
+		document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+	})();
+</script>
+
 <Font cssVariable="--font-atkinson" preload />
 
 <!-- Canonical URL -->
