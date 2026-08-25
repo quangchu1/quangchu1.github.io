@@ -4,8 +4,6 @@ description: 'A bilingual (English + Vietnamese) developer intro to Amazon Bedro
 pubDate: 'Jul 13 2026'
 ---
 
-# Getting Started with the AWS Bedrock AgentCore Starter Toolkit — Bắt đầu với AWS Bedrock AgentCore Starter Toolkit
-
 *Source: the [AWS Bedrock AgentCore Starter Toolkit repository](https://github.com/aws/bedrock-agentcore-starter-toolkit) (README.md and documentation) — Nguồn: kho mã nguồn và tài liệu của AWS Bedrock AgentCore Starter Toolkit.*
 
 ---

@@ -1,0 +1,113 @@
+---
+// In-post index, built from the headings Astro already parsed out of the
+// markdown. Nothing is declared per-post: add or rename a heading and the
+// index follows on the next build, so it cannot drift out of sync the way a
+// hand-maintained list in frontmatter would.
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+	headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+
+// Posts here do not agree on a top level: most start at h2, a few start at h1
+// (a bilingual title repeated in the body), and one is a markdown showcase
+// that runs h1..h6. So rather than hardcoding "h2 and h3", take whatever the
+// shallowest level in THIS document is and show it plus one level under it.
+// Two levels is the point where an index still scans in one glance.
+const usable = headings.filter((h) => h.text && h.text.trim() && h.slug);
+const topDepth = usable.length ? Math.min(...usable.map((h) => h.depth)) : 0;
+const shown = usable.filter((h) => h.depth <= topDepth + 1);
+
+// Below three entries an index says less than the prose above it, and every
+// English-log post has exactly one or two headings — they get nothing.
+const show = shown.length >= 3;
+
+// Long posts still get every entry, but start folded so the article is not
+// pushed off the screen. The 75-heading architecture review is the reason.
+const startOpen = shown.length <= 10;
+---
+
+{
+	show && (
+		<nav class="toc" aria-label="Contents">
+			<details open={startOpen}>
+				<summary>
+					Contents <span class="count">{shown.length} sections</span>
+				</summary>
+				<ol>
+					{shown.map((h) => (
+						<li class={h.depth === topDepth ? 'lvl-top' : 'lvl-sub'}>
+							<a href={`#${h.slug}`}>{h.text}</a>
+						</li>
+					))}
+				</ol>
+			</details>
+		</nav>
+	)
+}
+
+<style>
+	.toc {
+		margin: 0 0 2.5em;
+		padding: 0.85em 1.2em;
+		border: 1px solid rgb(var(--gray-light));
+		border-radius: 8px;
+		background: rgba(var(--gray-light), 0.35);
+		font-size: 0.85em;
+		line-height: 1.5;
+	}
+	summary {
+		cursor: pointer;
+		font-weight: 700;
+		color: rgb(var(--gray-dark));
+		/* The marker is the only affordance that this folds, so keep it. */
+		list-style: revert;
+	}
+	summary .count {
+		font-weight: 400;
+		color: rgb(var(--gray));
+	}
+	summary:focus-visible {
+		outline: 2px solid rgb(var(--accent));
+		outline-offset: 3px;
+	}
+	ol {
+		margin: 0.9em 0 0.2em;
+		padding: 0;
+		list-style: none;
+		/* Long indexes get columns on wide screens instead of a tall scroll. */
+		columns: 1;
+	}
+	li {
+		margin: 0.15em 0;
+		break-inside: avoid;
+	}
+	.lvl-sub {
+		padding-left: 1.15em;
+	}
+	.toc a {
+		color: rgb(var(--gray-dark));
+		text-decoration: none;
+		border-bottom: 1px solid transparent;
+	}
+	.lvl-sub a {
+		color: rgb(var(--gray));
+	}
+	.toc a:hover {
+		color: rgb(var(--accent));
+		border-bottom-color: rgb(var(--accent));
+	}
+	@media (min-width: 900px) {
+		ol {
+			columns: 2;
+			column-gap: 2em;
+		}
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		:global(html) {
+			scroll-behavior: smooth;
+		}
+	}
+</style>

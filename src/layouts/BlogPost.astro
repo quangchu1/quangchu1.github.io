@@ -1,14 +1,18 @@
 ---
 import { Image } from 'astro:assets';
+import type { MarkdownHeading } from 'astro';
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import TableOfContents from '../components/TableOfContents.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+// headings comes from render() in the route, not from the entry's frontmatter,
+// so it is spread in separately by each [...slug] page.
+type Props = CollectionEntry<'blog'>['data'] & { headings?: MarkdownHeading[] };
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, headings = [] } = Astro.props;
 ---
 
 <html lang="en">
@@ -52,6 +56,14 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 			.last-updated-on {
 				font-style: italic;
 			}
+			/* Anchor jumps from the index land flush against the viewport edge
+			   without this, which reads as if the heading were cut off. */
+			.prose :global(h2[id]),
+			.prose :global(h3[id]),
+			.prose :global(h4[id]),
+			.prose :global(h1[id]) {
+				scroll-margin-top: 1.5rem;
+			}
 		</style>
 	</head>
 
@@ -77,6 +89,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 						<h1>{title}</h1>
 						<hr />
 					</div>
+					<TableOfContents headings={headings} />
 					<slot />
 				</div>
 			</article>

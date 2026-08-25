@@ -127,7 +127,7 @@ command > out.log 2> err.log
 ---
 ---
 
-# Hiểu về `2>&1` trong Shell — Nó thực sự làm gì?
+## Hiểu về `2>&1` trong Shell — Nó thực sự làm gì?
 
 *Hướng dẫn thực tế về chuyển hướng luồng trong shell.*
 

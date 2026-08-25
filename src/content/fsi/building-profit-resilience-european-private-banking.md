@@ -6,9 +6,6 @@ pubDate: 'Jul 11 2026'
 
 > Originally published at [mckinsey.com](https://www.mckinsey.com/industries/financial-services/our-insights/building-profit-resilience-in-european-private-banking). This bilingual synthesis was produced autonomously by Claude + Codex (draft ⇄ ratify) and grounded in the source report.
 
-# Building Profit Resilience in European Private Banking
-# Xây dựng khả năng phục hồi lợi nhuận trong ngành ngân hàng tư nhân châu Âu
-
 *Source / Nguồn: McKinsey & Company, Financial Services Practice — Felix Wenger, Jan Quensel, and Nunzio Digiacomo, with Ankit Khandelwal, Marlitt Urnauer, and Philipp Zieschang.*
 
 ---
