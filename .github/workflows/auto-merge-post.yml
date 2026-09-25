@@ -1,0 +1,57 @@
+name: Auto-merge post branches
+
+# Push a branch named post/<slug> -> build it -> merge into main -> deploy.
+# The agent only ever pushes post/* branches; this workflow does the merge,
+# so nobody has to click "Merge" and no one pushes straight to main.
+on:
+  push:
+    branches: ['post/**']
+
+permissions:
+  contents: read
+
+# One auto-merge at a time, so two posts never race on main.
+concurrency:
+  group: auto-merge-post
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build   # a broken post never reaches main
+
+  merge:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # push the merge commit to main, delete the branch
+      actions: write    # dispatch deploy.yml
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Merge into main
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout main
+          git pull --ff-only origin main
+          # --no-ff keeps one merge commit per post; a conflict fails the job and leaves main untouched
+          git merge --no-ff "origin/$BRANCH" -m "Auto-merge $BRANCH"
+          git push origin main
+          git push origin --delete "$BRANCH"
+      - name: Deploy
+        # A push made with GITHUB_TOKEN does not trigger deploy.yml's "on: push",
+        # but workflow_dispatch is allowed, so start the deploy explicitly.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main
