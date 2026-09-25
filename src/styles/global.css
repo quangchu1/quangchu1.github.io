@@ -132,6 +132,28 @@ img {
 	height: auto;
 	border-radius: 8px;
 }
+/* Archify diagrams ship as a light + dark PNG pair. Swap on the resolved
+   [data-theme] (not prefers-color-scheme) so the ThemeToggle choice wins. */
+.archify-figure {
+	margin: 2em 0;
+}
+.archify-figure img {
+	display: block;
+	width: 100%;
+	border: 1px solid rgb(var(--gray-light));
+}
+.archify-figure .archify-dark,
+:root[data-theme='dark'] .archify-figure .archify-light {
+	display: none;
+}
+:root[data-theme='dark'] .archify-figure .archify-dark {
+	display: block;
+}
+.archify-figure figcaption {
+	margin-top: 0.5em;
+	font-size: 0.9em;
+	color: rgb(var(--gray));
+}
 code {
 	padding: 2px 5px;
 	background-color: rgb(var(--gray-light));
